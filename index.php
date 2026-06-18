@@ -4,7 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LY Jewels — Handcrafted with Love</title>
+  <title>LY Jewels — Styled with Love</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,29 +15,26 @@
 <!-- Dark Mode Toggle -->
 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
 
-<!-- Top Bar -->
-<div class="top-bar">🎀 Free Shipping Above ₹999 &nbsp;|&nbsp; New Arrivals Every Week &nbsp;|&nbsp; 50% OFF on Rings 🎀</div>
-
 <!-- Header -->
-<header class="header">
+<header class="header" id="site-header">
   <div class="nav-container">
     <a href="index.php" class="logo-wrap">
       <img src="images/logo.jpeg" alt="LY Jewels Logo" class="logo-img">
       <div>
         <span class="logo-text">LY Jewels</span>
-        <span class="logo-sub">Handcrafted with love</span>
+        <span class="logo-sub">Styled with love</span>
       </div>
     </a>
     <nav>
-      <a href="index.php">Home</a>
-      <a href="products.php">Shop</a>
-      <a href="wishlist.php"><span class="bow">🎀</span> Wishlist</a>
-      <a href="contact.php">Contact</a>
-      <a href="faq.php">FAQ</a>
+      <a href="index.php" data-text="Home">Home</a>
+      <a href="products.php" data-text="Shop">Shop</a>
+      <a href="wishlist.php" data-text="Wishlist"><span class="bow">🎀</span> Wishlist</a>
+      <a href="contact.php" data-text="Contact">Contact</a>
+      <a href="faq.php" data-text="FAQ">FAQ</a>
+      <a href="login.php" data-text="Login">Login</a>
+      <a href="reviews.php" data-text="Reviews">Reviews</a>
+      <a href="shopping_policy.php" data-text="Policy">Policy</a>
       <a href="cart.php" class="nav-cart">🛒 Cart</a>
-	  <a href="login.php">Login</a>
-	  <a href="reviews.php">Reviews</a>
-	  <a href="shopping_policy.php">Policy</a>
     </nav>
   </div>
 </header>
@@ -53,11 +53,10 @@
 
   <div class="hero-content">
     <span class="hero-eyebrow">Welcome to LY Jewels</span>
-    <h1 class="hero-title">Adorned in<br><em>Pink & Pretty</em></h1>
+    <h1 class="hero-title">Jewellery that<br><em>Speaks You</em></h1>
     <p class="hero-sub">Every piece is crafted to make you feel like the most beautiful version of yourself.</p>
     <div class="hero-btns">
       <a href="products.php"><button class="btn-primary">Shop Now 💕</button></a>
-      <a href="products.php?category=rings"><button class="btn-outline">View Rings</button></a>
     </div>
   </div>
 
@@ -77,7 +76,7 @@
     </div>
     <div class="feature-item">
       <span class="feature-icon">💎</span>
-      <div><strong>Premium Quality</strong> handcrafted jewellery</div>
+      <div><strong>Premium Quality</strong> antitarnished jewellery</div>
     </div>
     <div class="feature-item">
       <span class="feature-icon">🔄</span>
@@ -92,7 +91,7 @@
 
 <!-- New Arrivals -->
 <div class="container">
-  <p class="section-eyebrow">✦ Just for You ✦</p>
+  <p class="section-eyebrow just-for-you">✦ Just for You ✦</p>
   <h2 class="section-title">New Arrivals</h2>
   <div class="pink-divider"></div>
 
@@ -137,7 +136,7 @@
     <p class="section-eyebrow">✦ Browse by Style ✦</p>
     <h2 class="section-title">Shop by Category</h2>
     <div class="pink-divider"></div>
-    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:1rem;">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:1rem;">
       <?php
       $cats = [
         ['rings','💍 Rings'],['earrings','💎 Earrings'],['bracelets','✨ Bracelets'],
@@ -145,7 +144,7 @@
       ];
       foreach($cats as [$slug,$label]): ?>
       <a href="products.php?category=<?php echo $slug; ?>"
-         style="padding:12px 24px;background:var(--surface);border:1.5px solid var(--border2);border-radius:50px;font-size:0.82rem;color:var(--text2);transition:all 0.3s ease;"
+         style="padding:16px 32px;background:var(--surface);border:1.5px solid var(--border2);border-radius:50px;font-size:1rem;font-weight:500;color:var(--text2);transition:all 0.3s ease;letter-spacing:0.04em;"
          onmouseover="this.style.background='var(--pink)';this.style.color='white';this.style.borderColor='var(--pink)';"
          onmouseout="this.style.background='var(--surface)';this.style.color='var(--text2)';this.style.borderColor='var(--border2)';">
         <?php echo $label; ?>
@@ -160,7 +159,7 @@
   <div class="footer-top">
     <div class="footer-brand">
       <span class="logo-text">LY Jewels</span>
-      <p>Each piece in our collection is lovingly crafted to celebrate your most precious moments. Wear it, cherish it. 🎀</p>
+      <p>Each piece in our collection is lovingly styled to celebrate your most precious moments. Wear it, cherish it. 🎀</p>
     </div>
     <div class="footer-col">
       <h4>Shop</h4>
@@ -180,13 +179,12 @@
     <div class="footer-col">
       <h4>Connect</h4>
       <a href="#">📸 Instagram</a>
-      <a href="#">💬 Facebook</a>
       <a href="contact.php">✉️ Email Us</a>
     </div>
   </div>
   <div class="footer-bottom">
     <span>© 2025 LY Jewels. Made with 🎀 for jewellery lovers.</span>
-    <span style="color:var(--pink);">Crafted with Love ♡</span>
+    <span style="color:var(--pink);">Choose with Love ♡</span>
   </div>
 </footer>
 
@@ -215,6 +213,22 @@ if(saved === 'dark') {
   document.documentElement.setAttribute('data-theme','dark');
   document.querySelector('.theme-toggle').textContent = '☀️';
 }
+
+// ── Scroll-triggered header shrink ──
+document.addEventListener('DOMContentLoaded', function(){
+  const header = document.getElementById('site-header');
+  if(header){
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 40);
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  }
+  // Active link
+  document.querySelectorAll('nav a:not(.nav-cart)').forEach(a => {
+    if(a.getAttribute('href') === 'index.php') {
+      a.classList.add('nav-active');
+    }
+  });
+});
 </script>
 </body>
 </html>

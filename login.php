@@ -164,7 +164,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="auth-deco">
       <div class="deco-brand">
         <span class="logo-text">LY Jewels</span>
-        <span class="logo-sub">Handcrafted with love</span>
+        <span class="logo-sub">Styled with love</span>
       </div>
       <ul class="deco-perks">
         <li>🎀 Track your orders easily</li>
@@ -178,7 +178,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="auth-form-side">
       <div class="auth-eyebrow">✦ Welcome Back</div>
-      <h1 class="auth-title">Sign in to<br>LY Jewels 🌸</h1>
+      <h1 class="auth-title">Sign in to<br>LY Jewels 🎀</h1>
       <p class="auth-sub">Your jewellery journey continues here.</p>
 
       <?php if($error): ?>

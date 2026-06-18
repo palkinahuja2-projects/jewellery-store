@@ -1,0 +1,23 @@
+# ── Sensitive config (NEVER push API keys to GitHub) ──
+include/razorpay_config.php
+
+# ── OS files ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ──
+.vscode/
+.idea/
+*.suo
+*.user
+
+# ── PHP logs ──
+*.log
+error_log
+
+# ── XAMPP specific ──
+xampp/
+
+# ── Node (if ever added) ──
+node_modules/

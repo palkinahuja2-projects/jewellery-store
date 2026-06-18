@@ -5,23 +5,73 @@ include 'include/db.php';
 $success = '';
 $error   = '';
 
+// ── CSRF Token generation ──
+if(empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Handle review submission
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $reviewer_name = trim(mysqli_real_escape_string($conn, $_POST['reviewer_name']));
-    $rating        = intval($_POST['rating']);
-    $review_text   = trim(mysqli_real_escape_string($conn, $_POST['review_text']));
-    $product_name  = trim(mysqli_real_escape_string($conn, $_POST['product_name'] ?? ''));
 
-    if(empty($reviewer_name) || empty($review_text) || $rating < 1 || $rating > 5) {
-        $error = 'Please fill in all fields and select a rating.';
+    // CSRF check
+    if(!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $error = 'Security check failed. Please try again.';
     } else {
-        $q = "INSERT INTO reviews (reviewer_name, rating, review_text, product_name, created_at)
-              VALUES ('$reviewer_name', $rating, '$review_text', '$product_name', NOW())";
-        if(mysqli_query($conn, $q)) {
-            $success = 'Thank you for your review! 🎀';
+        $reviewer_name = htmlspecialchars(trim($_POST['reviewer_name'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $rating        = intval($_POST['rating'] ?? 0);
+        $review_text   = htmlspecialchars(trim($_POST['review_text'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $product_name  = htmlspecialchars(trim($_POST['product_name'] ?? ''), ENT_QUOTES, 'UTF-8');
+
+        // Rate limiting: max 3 reviews per session
+        if(!isset($_SESSION['review_count'])) $_SESSION['review_count'] = 0;
+        if($_SESSION['review_count'] >= 3) {
+            $error = 'You have reached the review limit for this session.';
+        } elseif(empty($reviewer_name) || empty($review_text) || $rating < 1 || $rating > 5) {
+            $error = 'Please fill in all fields and select a rating.';
+        } elseif(strlen($reviewer_name) > 100 || strlen($review_text) > 2000) {
+            $error = 'Input exceeds allowed length.';
         } else {
-            // Table might not exist yet — show helpful error
-            $error = 'Could not save review. Please run the SQL setup below.';
+
+            // Handle image upload (optional)
+            $image_path = '';
+            if(!empty($_FILES['review_image']['name'])) {
+                $allowed_types = ['image/jpeg','image/png','image/webp','image/gif'];
+                $max_size      = 3 * 1024 * 1024; // 3 MB
+
+                if(!in_array($_FILES['review_image']['type'], $allowed_types)) {
+                    $error = 'Only JPG, PNG, WEBP, or GIF images are allowed.';
+                } elseif($_FILES['review_image']['size'] > $max_size) {
+                    $error = 'Image must be under 3 MB.';
+                } else {
+                    $ext       = pathinfo($_FILES['review_image']['name'], PATHINFO_EXTENSION);
+                    $safe_name = 'review_' . bin2hex(random_bytes(8)) . '.' . $ext;
+                    $upload_dir = 'images/reviews/';
+                    if(!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+                    if(move_uploaded_file($_FILES['review_image']['tmp_name'], $upload_dir . $safe_name)) {
+                        $image_path = $upload_dir . $safe_name;
+                    } else {
+                        $error = 'Image upload failed. Please try again.';
+                    }
+                }
+            }
+
+            if(empty($error)) {
+                $rv = mysqli_real_escape_string($conn, $reviewer_name);
+                $rt = mysqli_real_escape_string($conn, $review_text);
+                $pn = mysqli_real_escape_string($conn, $product_name);
+                $ip = mysqli_real_escape_string($conn, $image_path);
+
+                $q = "INSERT INTO reviews (reviewer_name, rating, review_text, product_name, image_path, created_at)
+                      VALUES ('$rv', $rating, '$rt', '$pn', '$ip', NOW())";
+                if(mysqli_query($conn, $q)) {
+                    $_SESSION['review_count']++;
+                    // Regenerate CSRF token after successful submission
+                    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                    $success = 'Thank you for your review! 🎀';
+                } else {
+                    $error = 'Could not save review. Please ensure the reviews table is set up.';
+                }
+            }
         }
     }
 }
@@ -148,6 +198,26 @@ if($filter_star >= 1 && $filter_star <= 5) {
     }
     textarea { resize: vertical; min-height: 90px; }
 
+    /* Image upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border2);
+      border-radius: 12px;
+      padding: 1.2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg2);
+      position: relative;
+    }
+    .upload-zone:hover { border-color: var(--pink); background: var(--surface2); }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      width: 100%; height: 100%; border: none; padding: 0;
+    }
+    .upload-zone-text { font-size: 0.8rem; color: var(--muted); pointer-events: none; }
+    .upload-zone-icon { font-size: 1.8rem; display: block; margin-bottom: 0.3rem; }
+    #img-preview { max-width: 100%; border-radius: 10px; margin-top: 0.8rem; display: none; border: 1px solid var(--border); }
+
     /* Star picker */
     .star-picker { display: flex; gap: 6px; flex-direction: row-reverse; justify-content: flex-end; }
     .star-picker input { display: none; }
@@ -260,6 +330,7 @@ if($filter_star >= 1 && $filter_star <= 5) {
     .review-stars { font-size: 1rem; color: #f4c430; }
     .review-date  { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
     .review-body  { font-size: 0.88rem; color: var(--text2); line-height: 1.75; }
+    .review-img   { max-width: 100%; border-radius: 10px; margin-top: 0.9rem; border: 1px solid var(--border); max-height: 260px; object-fit: cover; }
     .verified-badge {
       display: inline-flex;
       align-items: center;
@@ -291,8 +362,8 @@ if($filter_star >= 1 && $filter_star <= 5) {
 <?php include 'nav.php'; ?>
 
 <div class="page-hero">
-  <p class="section-eyebrow">✦ Real Words, Real Love ✦</p>
-  <h2>Customer Reviews 💌</h2>
+  <p class="section-eyebrow" style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink-deep);">✦ Real Words, Real Love ✦</p>
+  <h2 style="font-size:clamp(2.8rem,5vw,4.5rem);">Customer Reviews 💌</h2>
 </div>
 
 <div class="reviews-layout">
@@ -338,19 +409,22 @@ if($filter_star >= 1 && $filter_star <= 5) {
         <div class="alert alert-success">🎉 <?php echo $success; ?></div>
       <?php endif; ?>
       <?php if($error): ?>
-        <div class="alert alert-error">⚠️ <?php echo $error; ?></div>
+        <div class="alert alert-error">⚠️ <?php echo htmlspecialchars($error); ?></div>
       <?php endif; ?>
 
-      <form method="POST" action="reviews.php">
+      <form method="POST" action="reviews.php" enctype="multipart/form-data">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
         <div class="form-group">
           <label>Your Name *</label>
-          <input type="text" name="reviewer_name" placeholder="e.g. Priya S." required
+          <input type="text" name="reviewer_name" placeholder="e.g. Priya S." required maxlength="100"
                  value="<?php echo isset($_POST['reviewer_name'])?htmlspecialchars($_POST['reviewer_name']):''; ?>">
         </div>
 
         <div class="form-group">
           <label>Product Purchased</label>
-          <input type="text" name="product_name" placeholder="e.g. Rose Gold Ring"
+          <input type="text" name="product_name" placeholder="e.g. Rose Gold Ring" maxlength="150"
                  value="<?php echo isset($_POST['product_name'])?htmlspecialchars($_POST['product_name']):''; ?>">
         </div>
 
@@ -367,7 +441,18 @@ if($filter_star >= 1 && $filter_star <= 5) {
 
         <div class="form-group">
           <label>Your Review *</label>
-          <textarea name="review_text" placeholder="Share your experience with us... 🎀" required><?php echo isset($_POST['review_text'])?htmlspecialchars($_POST['review_text']):''; ?></textarea>
+          <textarea name="review_text" placeholder="Share your experience with us... 🎀" required maxlength="2000"><?php echo isset($_POST['review_text'])?htmlspecialchars($_POST['review_text']):''; ?></textarea>
+        </div>
+
+        <!-- Upload Image Section -->
+        <div class="form-group">
+          <label>Upload a Photo (optional)</label>
+          <div class="upload-zone" onclick="document.getElementById('review_image').click()">
+            <input type="file" name="review_image" id="review_image" accept="image/jpeg,image/png,image/webp,image/gif" onchange="previewImg(event)" style="display:none;">
+            <span class="upload-zone-icon">📷</span>
+            <div class="upload-zone-text">Click to upload image (JPG, PNG, WEBP · max 3 MB)</div>
+          </div>
+          <img id="img-preview" src="" alt="Preview">
         </div>
 
         <button type="submit" class="submit-btn">Submit Review 💕</button>
@@ -423,6 +508,9 @@ if($filter_star >= 1 && $filter_star <= 5) {
           </div>
         </div>
         <div class="review-body"><?php echo nl2br(htmlspecialchars($r['review_text'])); ?></div>
+        <?php if(!empty($r['image_path']) && file_exists($r['image_path'])): ?>
+          <img src="<?php echo htmlspecialchars($r['image_path']); ?>" alt="Review photo" class="review-img">
+        <?php endif; ?>
         <div class="verified-badge">✅ Verified Purchase</div>
       </div>
       <?php endwhile; ?>
@@ -443,6 +531,20 @@ if($filter_star >= 1 && $filter_star <= 5) {
 
   </div><!-- /reviews-main -->
 </div><!-- /reviews-layout -->
+
+<script>
+function previewImg(event) {
+  const file = event.target.files[0];
+  const preview = document.getElementById('img-preview');
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+</script>
 
 </body>
 </html>

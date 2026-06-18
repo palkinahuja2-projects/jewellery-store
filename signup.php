@@ -127,7 +127,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="auth-top">
       <span class="logo-text">LY Jewels</span>
-      <span class="logo-sub">Handcrafted with love 🎀</span>
+      <span class="logo-sub">Styled with love 🎀</span>
     </div>
 
     <div class="auth-eyebrow">✦ Join the Family</div>

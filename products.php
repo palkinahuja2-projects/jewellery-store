@@ -13,6 +13,7 @@ if($search != '') {
     if($price == 'low')      $query = "SELECT * FROM products WHERE price < 500";
     elseif($price == 'mid')  $query = "SELECT * FROM products WHERE price BETWEEN 500 AND 2000";
     elseif($price == 'high') $query = "SELECT * FROM products WHERE price > 2000";
+    else $query = "SELECT * FROM products";
 } else {
     $query = "SELECT * FROM products";
 }
@@ -32,8 +33,8 @@ if(!$result) die("Query failed: " . mysqli_error($conn));
 <?php include 'nav.php'; ?>
 
 <div class="page-hero">
-  <p class="section-eyebrow">✦ Our Collection ✦</p>
-  <h2>Shop All Jewellery</h2>
+  <p class="section-eyebrow" style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink-deep);">✦ Our Collection ✦</p>
+  <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.5rem);font-weight:400;color:var(--text);">Shop All Jewellery</h2>
 </div>
 
 <div class="products-layout">
@@ -52,9 +53,15 @@ if(!$result) die("Query failed: " . mysqli_error($conn));
 
     <div class="filter-section">
       <h4>Price Range</h4>
-      <a href="products.php?price=low"  class="<?php echo $price==='low'  ? 'active' : ''; ?>">Under ₹500</a>
-      <a href="products.php?price=mid"  class="<?php echo $price==='mid'  ? 'active' : ''; ?>">₹500 – ₹2000</a>
-      <a href="products.php?price=high" class="<?php echo $price==='high' ? 'active' : ''; ?>">Above ₹2000</a>
+      <select class="price-dropdown" onchange="if(this.value) window.location='products.php?price='+this.value;">
+        <option value="">— Select Range —</option>
+        <option value="low"  <?php echo $price==='low'  ? 'selected' : ''; ?>>🌸 Under ₹500</option>
+        <option value="mid"  <?php echo $price==='mid'  ? 'selected' : ''; ?>>💍 ₹500 – ₹2,000</option>
+        <option value="high" <?php echo $price==='high' ? 'selected' : ''; ?>>💎 Above ₹2,000</option>
+      </select>
+      <?php if($price): ?>
+        <a href="products.php" class="price-clear-link">✕ Clear price filter</a>
+      <?php endif; ?>
     </div>
   </aside>
 

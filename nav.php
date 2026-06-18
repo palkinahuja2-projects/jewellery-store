@@ -1,28 +1,27 @@
 <?php
-// _nav.php — include this at top of every page after session_start() / db
-// Usage: include '_nav.php';
+// nav.php — include this at top of every page after session_start() / db
+// Usage: include 'nav.php';
 ?>
 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
-<div class="top-bar">🎀 Free Shipping Above ₹999 &nbsp;|&nbsp; New Arrivals Every Week &nbsp;|&nbsp; 50% OFF on Rings 🎀</div>
 <header class="header">
   <div class="nav-container">
     <a href="index.php" class="logo-wrap">
       <img src="images/logo.jpeg" alt="LY Jewels" class="logo-img">
       <div>
         <span class="logo-text">LY Jewels</span>
-        <span class="logo-sub">Handcrafted with love</span>
+        <span class="logo-sub">Styled with love</span>
       </div>
     </a>
     <nav>
-      <a href="index.php">Home</a>
-      <a href="products.php">Shop</a>
-      <a href="wishlist.php"><span class="bow">🎀</span> Wishlist</a>
-      <a href="contact.php">Contact</a>
-      <a href="faq.php">FAQ</a>
+      <a href="index.php" data-text="Home">Home</a>
+      <a href="products.php" data-text="Shop">Shop</a>
+      <a href="wishlist.php" data-text="✨ Wishlist"><span class="bow">🎀</span> Wishlist</a>
+      <a href="contact.php" data-text="Contact">Contact</a>
+      <a href="faq.php" data-text="FAQ">FAQ</a>
+      <a href="login.php" data-text="Login">Login</a>
+      <a href="reviews.php" data-text="Reviews">Reviews</a>
+      <a href="shopping_policy.php" data-text="Policy">Policy</a>
       <a href="cart.php" class="nav-cart">🛒 Cart</a>
-	  <a href="login.php">Login</a>
-	  <a href="reviews.php">Reviews</a>
-	  <a href="shopping_policy.php">Policy</a>
     </nav>
   </div>
 </header>
@@ -43,5 +42,26 @@ document.addEventListener('DOMContentLoaded', function(){
   const saved = localStorage.getItem('ly-theme');
   const btn = document.querySelector('.theme-toggle');
   if(btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+
+  /* ── Scroll-triggered header shrink ── */
+  const header = document.querySelector('.header');
+  if(header){
+    const onScroll = () => {
+      header.classList.toggle('scrolled', window.scrollY > 40);
+    };
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll(); // run on load in case page is already scrolled
+  }
+
+  /* ── Active page link highlight ── */
+  const page = location.pathname.split('/').pop() || 'index.php';
+  document.querySelectorAll('nav a:not(.nav-cart)').forEach(a => {
+    const href = a.getAttribute('href');
+    if(href && href === page){
+      a.style.color = 'var(--pink-deep)';
+      a.style.setProperty('--link-active','1');
+      a.classList.add('nav-active');
+    }
+  });
 });
 </script>

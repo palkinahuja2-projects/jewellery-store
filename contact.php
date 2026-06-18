@@ -21,8 +21,8 @@ if(isset($_POST['submit'])) {
 <?php include 'nav.php'; ?>
 
 <div class="page-hero">
-  <p class="section-eyebrow">✦ Say Hello ✦</p>
-  <h2>Contact Us 💌</h2>
+  <p class="section-eyebrow" style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink-deep);">✦ Say Hello ✦</p>
+  <h2 style="font-size:clamp(2.8rem,5vw,4.5rem);">Contact Us 💌</h2>
 </div>
 
 <div class="contact-layout">

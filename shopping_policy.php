@@ -150,8 +150,8 @@
 <?php include 'nav.php'; ?>
 
 <div class="page-hero">
-  <p class="section-eyebrow">✦ Transparency First ✦</p>
-  <h2>Shopping Policy 🛍️</h2>
+  <p class="section-eyebrow" style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink-deep);">✦ Transparency First ✦</p>
+  <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.5rem);font-weight:400;color:var(--text);">Shopping Policy 🛍️</h2>
 </div>
 
 <div class="policy-page">

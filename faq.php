@@ -10,8 +10,8 @@
 <?php include 'nav.php'; ?>
 
 <div class="page-hero">
-  <p class="section-eyebrow">✦ Common Questions ✦</p>
-  <h2>FAQ 🎀</h2>
+  <p class="section-eyebrow" style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink-deep);">✦ Common Questions ✦</p>
+  <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.5rem);font-weight:400;color:var(--text);">FAQ 🎀</h2>
 </div>
 
 <div class="faq-wrap">
@@ -25,7 +25,7 @@
     ["How do I care for my jewellery?","Store in a cool, dry place. Avoid contact with perfume, lotions, and chemicals. Clean gently with a soft cloth. 🌸"],
     ["Do you do gift wrapping?","Yes! We offer beautiful gift wrapping on request. Just mention it at checkout or contact us. 🎀"],
     ["Can I track my order?","Once dispatched, you'll receive a tracking number via SMS. You can also contact us directly for updates. 📦"],
-    ["Do you take custom orders?","Yes! We love creating custom pieces. Contact us with your idea and we'll make it happen. 💌"],
+
   ];
   foreach($faqs as $faq):
   ?>

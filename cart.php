@@ -14,8 +14,8 @@ include 'include/db.php';
 <?php include 'nav.php'; ?>
 
 <div class="page-hero">
-  <p class="section-eyebrow">✦ Review Your Selection ✦</p>
-  <h2>Shopping Cart 🛒</h2>
+  <p class="section-eyebrow" style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink-deep);">✦ Review Your Selection ✦</p>
+  <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.5rem);font-weight:400;color:var(--text);">Shopping Cart 🛍️</h2>
 </div>
 
 <div class="cart-wrapper">
